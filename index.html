@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ghost Apply</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; background: #f5f5f5; }
+    textarea, input, button {
+      width: 100%; padding: 10px; margin-bottom: 1rem; border-radius: 5px;
+    }
+    pre { background: #fff; padding: 1rem; white-space: pre-wrap; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Ghost Apply Resume Generator</h1>
+  <input id="jobTitle" placeholder="Job Title" />
+  <textarea id="userDetails" rows="6" placeholder="Paste your experience here..."></textarea>
+  <button onclick="generateResume()">Generate Resume</button>
+  <pre id="resume-output"></pre>
+
+  <script>
+    async function generateResume() {
+      const jobTitle = document.getElementById("jobTitle").value;
+      const userDetails = document.getElementById("userDetails").value;
+
+      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer ",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "gpt-4",
+          messages: [
+            {
+              role: "system",
+              content: "You are an expert resume writer. Create a stealthy resume."
+            },
+            {
+              role: "user",
+              content: `Job Title: ${jobTitle}\nUser Details: ${userDetails}`
+            }
+          ]
+        })
+      });
+
+      const data = await res.json();
+      const output = data.choices[0].message.content;
+      document.getElementById("resume-output").innerText = output;
+    }
+  </script>
+</body>
+</html>
